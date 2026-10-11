@@ -60,11 +60,15 @@ function update(){
   const text=input.value;
   document.getElementById('words').textContent=
     (text.trim().match(/\S+/g)||[]).length;
-  document.getElementById('chars').textContent=text.length;
+  document.getElementById('chars').textContent=
+    [...text].length;
   document.getElementById('lines').textContent=
     text.length ? text.split(/\r\n|\r|\n/).length : 0;
 }
-input.addEventListener('input',update);
+input.addEventListener('input',()=>{
+  update();
+  message.textContent='';
+});
 
 document.getElementById('clean').onclick=()=>{
   input.value=input.value
