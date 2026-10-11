@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Clean text, count words and characters, remove duplicate lines, and copy text for free.">
+<title>NOVA ONE — Free Text Tools</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Arial,sans-serif;background:#f5f7fb;color:#182033}
+header{padding:22px 16px;background:#111827;color:white}
+header h1{margin:0;font-size:25px}
+header p{margin:6px 0 0;color:#cbd5e1}
+main{max-width:760px;margin:24px auto;padding:0 15px}
+.card{background:white;padding:20px;border-radius:16px;box-shadow:0 5px 24px #1720330d}
+textarea{width:100%;min-height:220px;padding:14px;border:1px solid #cbd5e1;border-radius:10px;font:16px/1.6 system-ui;resize:vertical}
+textarea:focus{outline:2px solid #647cff;border-color:transparent}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+button{border:0;border-radius:9px;padding:11px 14px;font-size:14px;font-weight:650;background:#e8ecf5;color:#182033;cursor:pointer}
+button.primary{background:#4355e8;color:white}
+button:active{transform:scale(.98)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.stat{background:#f1f4fa;border-radius:10px;padding:12px;text-align:center}
+.stat strong{display:block;font-size:22px}
+.stat span{font-size:12px;color:#596579}
+#message{min-height:24px;color:#4355e8;font-size:14px}
+footer{text-align:center;color:#697386;font-size:13px;padding:24px}
+</style>
+</head>
+<body>
+<header>
+  <h1>NOVA ONE</h1>
+  <p>Simple tools. Free for everyone.</p>
+</header>
+<main>
+  <section class="card">
+    <h2>Free Text Cleaner</h2>
+    <p>Clean text, remove extra spaces, count words and copy your result.</p>
+    <textarea id="input" placeholder="Paste or type your text here..."></textarea>
+    <div class="buttons">
+      <button class="primary" id="clean">Clean Text</button>
+      <button id="duplicates">Remove Duplicate Lines</button>
+      <button id="copy">Copy Text</button>
+      <button id="clear">Clear</button>
+    </div>
+    <div id="message" role="status"></div>
+    <div class="stats">
+      <div class="stat"><strong id="words">0</strong><span>Words</span></div>
+      <div class="stat"><strong id="chars">0</strong><span>Characters</span></div>
+      <div class="stat"><strong id="lines">0</strong><span>Lines</span></div>
+    </div>
+  </section>
+</main>
+<footer>© <span id="year"></span> NOVA ONE · Free online text tools</footer>
+<script>
+const input=document.getElementById('input');
+const message=document.getElementById('message');
+
+function update(){
+  const text=input.value;
+  document.getElementById('words').textContent=
+    (text.trim().match(/\S+/g)||[]).length;
+  document.getElementById('chars').textContent=text.length;
+  document.getElementById('lines').textContent=
+    text.length ? text.split(/\r\n|\r|\n/).length : 0;
+}
+input.addEventListener('input',update);
+
+document.getElementById('clean').onclick=()=>{
+  input.value=input.value
+    .split(/\r\n|\r|\n/)
+    .map(line=>line.replace(/[ \t]+/g,' ').trim())
+    .join('\n').trim();
+  update();
+  message.textContent='Text cleaned successfully.';
+};
+
+document.getElementById('duplicates').onclick=()=>{
+  const seen=new Set();
+  input.value=input.value.split(/\r\n|\r|\n/)
+    .filter(line=>{
+      const key=line.trim();
+      if(!key||seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).join('\n');
+  update();
+  message.textContent='Duplicate and blank lines removed.';
+};
+
+document.getElementById('copy').onclick=async()=>{
+  try{
+    await navigator.clipboard.writeText(input.value);
+    message.textContent='Copied to clipboard!';
+  }catch(e){
+    input.select();
+    message.textContent='Text selected. Use Copy from your keyboard menu.';
+  }
+};
+
+document.getElementById('clear').onclick=()=>{
+  input.value='';
+  update();
+  message.textContent='Text cleared.';
+};
+
+document.getElementById('year').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
